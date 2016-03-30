@@ -1,0 +1,32 @@
+<ion-view title="Profile">
+  <ion-content overflow-scroll="true" padding="true" scroll="false" class="has-header has-footer">
+    <div class="page-header">
+      <h1>Profile</h1>
+    </div>
+    <div class="container-fluid" id="profile">
+      <div class="row title-row">
+        <img ng-src="{{profileData.profilePicture}}" alt="profilePicture" width="100px" height="100px"/>
+        <h1>{{profileData.name}}</h1>
+        <h3 ng-show="profileData.about">{{profileData.location}}</h3>
+        <h4 ng-show="profileData.about">{{profileData.about}}</h4>
+      </div>
+      <div class="row info-row">
+        <h3><a href="">Booktitle Name</a></h3>
+        <h4>Authorperson Someone</h4>
+      </div>
+      <div class="row info-row">
+        <h3><a href="">Booktitle Name</a></h3>
+        <h4>Authorperson Someone</h4>
+      </div>
+      <div class="row info-row">
+        <h3><a href="">Booktitle Name</a></h3>
+        <h4>Authorperson Someone</h4>
+      </div>
+      <div class="row info-row">
+        <h3><a href="">Booktitle Name</a></h3>
+        <h4>Authorperson Someone</h4>
+      </div>
+    </div>
+    <div class="overlay"></div>
+  </ion-content>
+</ion-view>
