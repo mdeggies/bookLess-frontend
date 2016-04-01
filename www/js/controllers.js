@@ -54,7 +54,7 @@ app.controller('profileCtrl', function($scope, $state, $http, $rootScope) {
   });
 });
 
-app.controller('CardsCtrl', function($scope, $rootScope, $http, TDCardDelegate) {
+app.controller('CardsCtrl', function($scope, $rootScope, $state, $http, TDCardDelegate) {
   console.log('in cardsCtrl');
 
   var cardTypes = [
@@ -67,6 +67,7 @@ app.controller('CardsCtrl', function($scope, $rootScope, $http, TDCardDelegate) 
 
   $scope.cards = Array.prototype.slice.call(cardTypes, 0);
   $scope.savedCards = [];
+  $scope.categories = [];
 
   $scope.addCard = function() {
     console.log('card added');
@@ -93,18 +94,23 @@ app.controller('CardsCtrl', function($scope, $rootScope, $http, TDCardDelegate) 
     $scope.cards.splice(index, 1);
     sendCards();
   };
-
+  
   function sendCards() {
     console.log('in send cards');
     console.log('scope.cards.length:',$scope.cards.length);
     if (($scope.cards.length <= 0) && ($scope.savedCards.length >= 1)) {
       console.log('in send cards if statement');
-      $http.post('http://localhost:3000/api/cards', $scope.savedCards)
+      for (var i=0; i<$scope.savedCards.length; i++) {
+        var genre = $scope.savedCards[i].title;
+        $scope.categories.push(genre);
+      }
+      /*$http.post('http://localhost:3000/api/cards', $scope.savedCards)
       .then(function(result) {
         console.log('result:',JSON.stringify(result));
+        $state.go('suggestions');
       }, function(err) {
         console.log('error:',JSON.stringify(err));
-      });
+      });*/
     }
   };
 
