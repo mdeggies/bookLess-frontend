@@ -1,5 +1,20 @@
 <ion-view title="Categories">
-    <ion-content overflow-scroll="true" padding="true" scroll="false" class="has-header has-footer">
-        <h2 id="bookLess-heading2" style="color:#000000;text-align:center;">Inside Categories</h2>
-    </ion-content>
+  <ion-content overflow-scroll="true" padding="true" scroll="false" class="has-header has-footer">
+    <h2 id="bookLess-heading2" style="color:#000000;text-align:center;">Genres</h2>
+    <ion-pane ng-controller="CardsCtrl">
+      <td-cards>
+        <td-card ng-repeat="card in cards" on-destroy="cardDestroyed($index)" on-swipe-left="cardSwipedLeft($index)" on-swipe-right="cardSwipedRight($index)" on-partial-swipe="cardPartialSwipe(amt)" class="card-{{$index}}">
+          <div class="title">
+            {{card.title}}
+          </div>
+          <div class="image" ng-controller="CardCtrl">
+            <div class="no-text">Dislike</div>
+            <img ng-src="{{card.image}}"height="auto">
+            <div class="yes-text">Wishlist</div>
+          </div>
+        </td-card>
+      </td-cards>
+      <h4>Select your favorite genres</h4>
+    </ion-pane>
+  </ion-content>
 </ion-view>
