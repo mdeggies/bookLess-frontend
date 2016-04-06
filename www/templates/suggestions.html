@@ -1,0 +1,39 @@
+<ion-view title="Suggestions">
+  <ion-content overflow-scroll="true" padding="true" scroll="false" class="has-header has-footer">
+    <h2 id="bookLess-heading2" style="color:#000000;text-align:center;">Suggestions</h2>
+    <div class="cards">
+
+      <!--  <ion-list ng-repeat-start="book in bookDetails">
+      <ion-item class="item-text-wrap item-thumbnail-right" ng-repeat-start="img in bookImgs" ng-click="getDetails(book)" on-destroy="cardDestroyed($index)" on-swipe-left="cardSwipedLeft($index)" on-swipe-right="cardSwipedRight($index)" on-partial-swipe="cardPartialSwipe(amt)" class="book-{{$index}}">
+      <img ng-src="{{img}}" />
+      <h2>{{book.title}}</h2>
+      <p>By: {{book.author}}</p>
+    </ion-item>
+    <div ng-repeat-end="" ng-hide="true"></div>
+  </ion-list>
+  <div ng-repeat-end="" ng-hide="true"></div>-->
+
+  <ion-list ng-repeat-start="book in bookDetails">
+    <div class="list card" ng-repeat-start="img in bookImgs" ng-click="getDetails(book)" on-destroy="cardDestroyed($index)" on-swipe-left="cardSwipedLeft($index)" on-swipe-right="cardSwipedRight($index)" on-partial-swipe="cardPartialSwipe(amt)" class="book-{{$index}}">
+
+      <div class="item item-avatar">
+        <img ng-src="{{img}}">
+        <h2>{{book.title}}</h2>
+        <p>By: {{book.author}}</p>
+      </div>
+
+      <div class="item item-body">
+        <img class="full-image" ng-src="{{img}}">
+      </div>
+
+      <a class="item item-icon-right assertive" href="#">
+        <i class="icon ion-heart"></i>
+      </a>
+      <a class="item item-icon-left assertive" href="#">
+        <i class="icon ion-close-circled"></i>
+      </a>
+    </div> <div ng-repeat-end="" ng-hide="true"></div>
+  </ion-list> <div ng-repeat-end="" ng-hide="true"></div>
+
+</ion-content>
+</ion-view>

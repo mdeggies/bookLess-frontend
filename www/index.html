@@ -11,33 +11,57 @@
   <script src="cordova_plugins.js"></script>
   <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
 
-  <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-  <link href="css/ionic.app.css" rel="stylesheet">
--->
-<script src="js/ng-cordova.min.js"></script>
-<script src="js/app.js"></script>
-<script src="../../lib/collide/collide.js"></script>
-<script src="../../lib/ionic-ion-tinder-cards/ionic.tdcards.js"></script>
-<link href="../../lib/ionic-ion-tinder-cards/ionic.tdcards.css" rel="stylesheet">
-<link href="../../css/main.css" rel="stylesheet">
-<script src="js/controllers.js"></script>
-<script src="js/routes.js"></script>
-<script src="js/services.js"></script>
-<script src="js/directives.js"></script>
-
-<!-- Only required for Tab projects w/ pages in multiple tabs
-<script src="lib/ionicuirouter/ionicUIRouter.js"></script>
--->
+  <script src="js/ng-cordova.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="../../lib/collide/collide.js"></script>
+  <script src="../../lib/ionic-ion-tinder-cards/ionic.tdcards.js"></script>
+  <link href="../../lib/ionic-ion-tinder-cards/ionic.tdcards.css" rel="stylesheet">
+  <link href="../../css/main.css" rel="stylesheet">
+  <script src="js/controllers.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/directives.js"></script>
 
 </head>
 <body ng-app="app" animation="slide-left-right-ios7" no-scroll>
-  <div>
-    <div>
-      <ion-nav-bar class="bar-stable">
-        <ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Back</ion-nav-back-button>
-      </ion-nav-bar>
-      <ion-nav-view></ion-nav-view>
+  <div ng-controller="appCtrl">
+
+    <ion-nav-view></ion-nav-view>
+
+    <div class="bar bar-header">
+      <button class="button button-icon icon ion-navicon" ng-click="toggleSideMenu()"></button>
+      <div class="h1 title">BookLess</div>
     </div>
+
+    <ion-side-menus>
+      <!-- Main content -->
+      <ion-side-menu-content>
+        <ion-nav-view></ion-nav-view>
+      </ion-side-menu-content>
+
+
+      <!-- Left Side Menu -->
+      <ion-side-menu side="left">
+        <ion-content drag-content="false">
+          <ion-item href="#/"><h1>{{profileData.name}}</h1></ion-item>
+          <ion-item href="#/"><img ng-src="{{profileData.profilePicture}}" width="100px" height="100px"></ion-item>
+        </ion-content>
+      </ion-side-menu>
+    </ion-side-menus>
   </div>
+
+  <!--  <ion-side-menus>
+
+  <ion-side-menu side="left">
+  <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  <ion-content drag-content="false" ng-controller="profileCtrl">
+  <ion-list>
+  <ion-item href="#/"><h1>{{profileData.name}}</h1></ion-item>
+  <ion-item href="#/"><img ng-src="{{profileData.profilePicture}}" width="100px" height="100px"></ion-item>
+</ion-list>
+</ion-content>
+</ion-side-menu>
+</ion-side-menus>-->
+
 </body>
 </html>

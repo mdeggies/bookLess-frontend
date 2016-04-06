@@ -2,6 +2,13 @@
 
 var app = angular.module('app.controllers', []);
 
+app.controller('appCtrl', function($scope, $ionicSideMenuDelegate) {
+  $scope.toggleSideMenu = function() {
+    console.log('in toggle side menu');
+    $ionicSideMenuDelegate.toggleLeft();
+  };
+});
+
 app.controller('homeCtrl', function($scope, $cordovaOauth, $state, $rootScope, $http) {
   $scope.facebookSignIn = function() {
     $cordovaOauth.facebook("942618409193104", ["email"]).then(function(result) {
@@ -36,90 +43,124 @@ app.controller('homeCtrl', function($scope, $cordovaOauth, $state, $rootScope, $
 });
 
 app.controller('profileCtrl', function($scope, $state, $http, $rootScope) {
+  console.log('in profileCtrl');
   var access_token = $rootScope.access_token;
   $http.get("https://graph.facebook.com/v2.2/me", {params: {access_token: access_token, fields: "id,name,location,about,picture", format: "json"}})
   .then(function(result) {
     var id = result.data.id;
+    $rootScope.fbId = id;
     var name = result.data.name;
     var location = result.data.location;
     var about = result.data.about;
     var picture = result.data.picture.data.url;
-    console.log('id:', id);
-    console.log('name:', name);
-    console.log('location:',result.data.location);
-    console.log('about:',result.data.about);
     $scope.profileData = {name: name, location: location, about: about, profilePicture: picture};
   }, function(err) {
     console.log('error:',JSON.stringify(err));
   });
 });
 
-app.controller('CardsCtrl', function($scope, $rootScope, $state, $http, TDCardDelegate) {
-  console.log('in cardsCtrl');
-
-  var cardTypes = [
-    { title: 'Scifi', image: 'http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg' },
-    { title: 'Mystery', image: 'http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg' },
-    { title: 'Fantasy', image: 'http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg' },
-    { title: 'Romance', image: 'http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg' },
-    { title: 'Young Adult', image: 'http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg' }
+app.controller('categoriesCtrl', function($scope, $state, $http, $rootScope, $ionicPopup) {
+  $scope.genres = [
+    {title: "Scifi", image: "http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg"},
+    {title: "Horror", image: "http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg"},
+    {title: "Fantasy", image: "http://www.imgion.com/images/01/Yellow-Rose-Picture-.jpg"},
   ];
 
-  $scope.cards = Array.prototype.slice.call(cardTypes, 0);
-  $scope.savedCards = [];
-  $scope.categories = [];
+  var selected = [];
 
-  $scope.addCard = function() {
-    console.log('card added');
-    var newCard = cardTypes[Math.floor(Math.random() * cardTypes.length)];
-    newCard.id = Math.random();
-    $scope.cards.push(angular.extend({}, newCard));
+  $scope.selectGenre = function(genre) {
+    var index = selected.indexOf(genre);
+    if (index > -1) {
+      selected.splice(index, 1);
+      genre.selected = false;
+    } else {
+      selected.push(genre);
+      genre.selected = true;
+    }
   }
+
+  $scope.submit = function() {
+    if (selected.length <= 0) {
+      $ionicPopup.alert({
+        title: 'Oops!',
+        content: 'You forgot to select a category'
+      }).then(function(res) {
+        console.log('User forgot to select category');
+      });
+    }
+    else {
+      console.log('selected:',JSON.stringify(selected));
+      $rootScope.categories = selected;
+      $state.go('suggestions');
+    }
+  };
+});
+
+app.controller('suggestionsCtrl', function($scope, $rootScope, $state, $http, $ionicLoading, TDCardDelegate) {
+
+  $scope.bookImgs = [];
+  $scope.bookDetails = [];
+
+  $ionicLoading.show({
+    content: 'Loading',
+    animation: 'fade-in',
+    showBackdrop: true,
+    maxWidth: 200,
+    showDelay: 0
+  });
+
+  $http.post('http://localhost:3000/api/bookImgs', $rootScope.categories)
+  .then(function(result) {
+    for (var i=0; i<result.data.length; i++) {
+      var url = result.data[i].MediumImage.URL;
+      $scope.bookImgs.push(url);
+    }
+    $http.post('http://localhost:3000/api/bookDetails', $rootScope.categories)
+    .then(function(result) {
+      for (var i=0; i<result.data.length; i++) {
+        var title = result.data[i].ItemAttributes.Title;
+        var author = result.data[i].ItemAttributes.Author;
+        var url = result.data[i].DetailPageURL;
+        $scope.bookDetails.push({title: title, author: author, url: url});
+      }
+      $ionicLoading.hide();
+    }, function(err) {
+      console.log('error:',JSON.stringify(err));
+    });
+  }, function(err) {
+    console.log('error:',JSON.stringify(err));
+  });
+  $scope.getDetails = function(book) {
+    console.log(JSON.stringify(book));
+  };
 
   $scope.cardDestroyed = function(index) {
     console.log('card destroyed');
-    $scope.cards.splice(index, 1);
-};
+    $scope.bookImgs.splice(index, 1);
+    $scope.bookDetails.splice(index, 1);
+  };
 
   $scope.cardSwipedLeft = function(index) {
     console.log('left swipe- card deleted');
-    $scope.cards.splice(index, 1);
-    sendCards();
+    $scope.bookImgs.splice(index, 1);
+    $scope.bookDetails.splice(index, 1);
+    //sendCards();
   };
 
   $scope.cardSwipedRight = function(index) {
     console.log('right swipe- card added');
-    var card = $scope.cards[index];
-    $scope.savedCards.push(card);
-    $scope.cards.splice(index, 1);
-    sendCards();
-  };
-  
-  function sendCards() {
-    console.log('in send cards');
-    console.log('scope.cards.length:',$scope.cards.length);
-    if (($scope.cards.length <= 0) && ($scope.savedCards.length >= 1)) {
-      console.log('in send cards if statement');
-      for (var i=0; i<$scope.savedCards.length; i++) {
-        var genre = $scope.savedCards[i].title;
-        $scope.categories.push(genre);
-      }
-      /*$http.post('http://localhost:3000/api/cards', $scope.savedCards)
-      .then(function(result) {
-        console.log('result:',JSON.stringify(result));
-        $state.go('suggestions');
-      }, function(err) {
-        console.log('error:',JSON.stringify(err));
-      });*/
-    }
+    var image = $scope.bookImgs.splice(index, 1);
+    var details = $scope.bookDetails.splice(index, 1);
+    var book = {fbId: $rootScope.fbId, image: image, details: details};
+    sendBook(book);
   };
 
-});
-
-app.controller('categoriesCtrl', function($scope, $state, $http) {
-  console.log('in categoriesCtrl');
-});
-
-app.controller('CardCtrl', function($scope, $state, TDCardDelegate) {
-  console.log('in CardCtrl');
+  function sendBook(book) {
+    $http.post('http://localhost:3000/api/wishlist', book)
+    .then(function(result) {
+      console.log('result:',JSON.stringify(result));
+    }, function(err) {
+      console.log('error:',JSON.stringify(err));
+    });
+  }
 });
